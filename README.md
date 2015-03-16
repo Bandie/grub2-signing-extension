@@ -42,7 +42,7 @@ First, export your public key.
 
 Next step, mount /boot and (re)install GRUB2 with the following arguments:
 
-`grub2-install /dev/sda -k /root/pubkey --modules="gcry\_sha256 gcry\_dsa gcry\_rsa"`
+`grub2-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
 
 
 Now download the grub2-signing-extension and run `make install` as root. You will now have `grub2-sign`, `grub2-unsign` and `grub2-verify` as runable scripts.
@@ -92,4 +92,8 @@ to
 The important changing is the flag *--unrestricted*.
 
 
-Run `grub2-unsign` to unsign the bootloader. Then run `grub2-mkconfig -o /boot/grub/grub.cfg` to write the new config. After this run `grub2-sign` again to sign the new changings.
+Run `grub2-unsign` to unsign the bootloader. 
+
+Then run `grub2-mkconfig -o /boot/grub/grub.cfg` to write the new config. 
+
+After this run `grub2-sign` again to sign the new changings.
