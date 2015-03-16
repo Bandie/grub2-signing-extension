@@ -6,7 +6,7 @@
 
 errorcounter=0
 c=0
-echo "Checks signature in /boot..."  
+echo "Checking signatures in /boot..."  
 for i in `find /boot -name "*.sig"` 
 do 
     gpg --verify-files $i > /dev/null 2>&1
