@@ -64,6 +64,50 @@ Now the time is come to sign your GRUB2 bootloader. Just run `grub2-sign`, enter
 
 
 
+
+
+
+## Files
+
+If you didn't read the instruction above here is what the scripts does:
+
+* `grub2-sign` is signing the bootloader files with root's keypair.
+* `grub2-unsign` is removing the signatures of the bootloader files.
+* `grub2-verify` is checking if your signatures are good. If not, you will see which signature is bad.
+
+
+
+## Troubleshooting
+
+### I forgot to run grub2-unsign before I made changes. What now?
+
+Run `grub2-verify` to see, which signature is bad. Remove the signature and run `grub2-unsign`, after this `grub2-sign`.
+
+
+### How can I switch off GRUB2's check_signature feature?
+
+Open */etc/grub.d/00_header* and remove the part 
+
+    cat << EOF
+    set check_signatures=enforce
+    EOF
+
+Run `grub2-unsign` and `grub2-mkconfig -o /boot/grub/grub.cfg`.
+
+
+### Suddenly I can't boot! This is YOUR FAULT!
+
+No. An important signature is bad. So GRUB2 didn't run this part of code/configuration/kernel/whatever.
+
+
+### Okay, I really got some bad signatures. What do I do now?
+
+Check your system thoroughly. Check it about malicious software. Check it about malicious connections. CHECK EVERYTHING.
+
+
+
+# ADDENDUM
+
 ## How to install a GRUB2 password
 
 Run `grub2-mkpasswd-pbkdf2` and type a password. Please take care because in the GRUB2 standard installation the keyboard layout is set to en\_US.
@@ -75,7 +119,7 @@ Copy the content of *grub.pbkdf2.[...]* to your clipboard. Open the file */etc/g
     password_pbkdf2 yourUsername grub.pbkdf2.[...this string from the clipboard...]
     EOF
 
-To boot GNU/Linux without automatically and without authentication open */etc/grub.d/10_linux* and change the following lines like this
+To boot GNU/Linux automatically and without authentication open */etc/grub.d/10_linux* and change the following lines like this
 
      echo "menuentry '$(echo "$title" | grub_quote)' ${CLASS} \$menuentry_id_option 'gnulinux-$version-$type-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
     else
@@ -97,3 +141,4 @@ Run `grub2-unsign` to unsign the bootloader.
 Then run `grub2-mkconfig -o /boot/grub/grub.cfg` to write the new config. 
 
 After this run `grub2-sign` again to sign the new changings.
+
