@@ -1,0 +1,17 @@
+#!/bin/bash
+# grub2-unsign
+# Unsigns every file in /boot. Depends on grub2-verify
+# Author: Bandie Kojote
+# Licence: GNU-GPLv3
+
+grub2-verify
+if [ $? -eq 1 ]
+then
+    echo -e "grub2-verify has detected a one or more bad signatures.\nPlease check for malicious software before you're unsigning everything!"
+    exit 1
+fi
+for i in `find /boot -name "*.sig"` 
+do
+	rm $i
+done
+echo "GRUB2 unsigned."

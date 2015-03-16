@@ -1,0 +1,33 @@
+#!/bin/bash
+# grub2-sign
+# Signs everything important in /boot. Depends on grub2-verify.
+# Author: Bandie Kojote
+# Licence: GNU-GPLv3
+
+echo "Running grub2-verify to check if everything is unsigned..."
+grub2-verify
+if [ $? -lt 2 ]
+then
+    echo "Run grub2-unsign first."
+    exit 1
+fi
+
+echo -n "Passphrase: "
+stty -echo
+read pp
+stty echo
+echo -e "\n"
+for i in `find /boot -name "*.cfg" -or -name "*.lst" -or \
+ -name "*.mod" -or -name "vmlinuz*" -or -name "initrd*" -or \
+ -name "grubenv" -or -name "*.asc" -or -name "*.pf2"`;
+do
+    echo $pp | gpg --batch --detach-sign --passphrase-fd 0 $i
+    if [ $? -eq 0 ]
+    then
+        echo "$i signed."
+    else
+        echo "ERROR!"
+	break
+    fi
+done
+pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w 96 | head -n 1`
