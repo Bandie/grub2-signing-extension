@@ -40,4 +40,12 @@ do
 done
 
 # Shredding passphrase
-pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w ${#pp} | head -n 1`
+
+echo "Shredding passphrase..."
+for ( i=0; $i<10; i++ )
+do
+    pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w ${#pp} | head -n 1`
+done
+
+echo "Done!"
+exit 0

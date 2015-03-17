@@ -19,3 +19,4 @@ do
 	rm $i
 done
 echo "GRUB2 unsigned. WARNING: If you want to deactivate GRUB2's signature feature, change the check_signatures variable in the headers file!"
+exit 0
