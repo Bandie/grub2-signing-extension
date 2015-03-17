@@ -40,7 +40,7 @@ First, export your public key.
 `# gpg --export -o ~/pubkey`
 
 
-Next step, `mount /boot` and (re)install GRUB2 with the following arguments:
+Next step, `mount /boot` and (re)install GRUB2. You need to install the public key into the core and instruct to load the modules `gcry_sha256` `gcry_dsa` and `gcry_rsa` at start. So you need the following arguments to install it this way
 
 `grub2-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
 
