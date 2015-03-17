@@ -4,6 +4,8 @@
 # Author: Bandie Kojote
 # Licence: GNU-GPLv3
 
+
+# Running grub2-verify first to prevent double signing
 echo "Running grub2-verify to check if everything is unsigned..."
 grub2-verify
 if [ $? -lt 2 ]
@@ -12,15 +14,21 @@ then
     exit 1
 fi
 
+
+# Ask for passphrase
 echo -n "Passphrase: "
 stty -echo
 read pp
 stty echo
 echo -e "\n"
+
+
+# Find GRUB2 datas
 for i in `find /boot -name "*.cfg" -or -name "*.lst" -or \
  -name "*.mod" -or -name "vmlinuz*" -or -name "initrd*" -or \
  -name "grubenv" -or -name "*.asc" -or -name "*.pf2"`;
 do
+    # Signing
     echo $pp | gpg --batch --detach-sign --passphrase-fd 0 $i
     if [ $? -eq 0 ]
     then
@@ -30,4 +38,6 @@ do
 	break
     fi
 done
-pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w 96 | head -n 1`
+
+# Shredding passphrase
+pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w ${#pp} | head -n 1`

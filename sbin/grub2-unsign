@@ -4,14 +4,18 @@
 # Author: Bandie Kojote
 # Licence: GNU-GPLv3
 
+# Check if something is wrong
 grub2-verify
 if [ $? -eq 1 ]
 then
     echo -e "grub2-verify has detected a one or more bad signatures.\nPlease check for malicious software before you're unsigning everything!"
     exit 1
 fi
+
+
+# Then remove the signatures.
 for i in `find /boot -name "*.sig"` 
 do
 	rm $i
 done
-echo "GRUB2 unsigned."
+echo "GRUB2 unsigned. WARNING: If you want to deactivate GRUB2's signature feature, change the check_signatures variable in the headers file!"

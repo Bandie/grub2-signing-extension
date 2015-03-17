@@ -5,7 +5,11 @@
 # Licence: GNU-GPLv3
 
 errorcounter=0
-c=0
+filecounter=0
+
+
+# Signature check part + error counter + file counter + file list
+
 echo "Checking signatures in /boot..."  
 for i in `find /boot -name "*.sig"` 
 do 
@@ -15,14 +19,18 @@ do
         ((errorcounter++))
         files[$errorcounter]=$i
     fi
-    ((c++))
+    ((filecounter++))
 done
-
-if [ $c -eq 0 ]
+# Nothing to verify? Exit 2.
+if [ $filecounter -eq 0 ]
 then
     echo "Nothing to verify."
     exit 2
 fi
+
+
+
+# Message
 
 echo -ne "There has been "
 if [ $errorcounter -eq 0 ]
@@ -37,6 +45,10 @@ then
 else
     echo " bad signatures."
 fi
+
+
+
+# File list and exit codes
 
 if [ $errorcounter -gt 0 ]
 then

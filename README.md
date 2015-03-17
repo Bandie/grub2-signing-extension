@@ -1,6 +1,6 @@
 # grub2-signing-extension for GRUB2
 
-GRUB2 has got a function which automatically checks if your GRUB2 files are signed and have a good signature. If the files aren't signed or have a bad signature GRUB2 won't run them to prevent running malicious software.
+GRUB2 has got a function called "check\_signatures" which automatically checks if your GRUB2 files are signed and have a good signature. If the files aren't signed or have a bad signature GRUB2 won't run them to prevent running malicious software.
 The GRUB2 signing extension are some scripts which helps you to verify, sign and unsign your GRUB2 bootloader files using gpg. 
 
 
