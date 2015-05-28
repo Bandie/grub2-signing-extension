@@ -11,7 +11,7 @@ You need
 
 * GRUB2 ( sys-boot/grub:2 )
 * GNUpg < 2.1 ( < app-crypt/gnupg-2.1 )  
-For GNUpg >= 2.1 see branch (for-gpg-2.1)[https://github.com/Bandie/grub2-signing-extension/tree/for-gpg-2.1]
+For GNUpg >= 2.1 see branch [for-gpg-2.1](https://github.com/Bandie/grub2-signing-extension/tree/for-gpg-2.1)
 
 
 
