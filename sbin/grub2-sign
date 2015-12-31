@@ -6,46 +6,44 @@
 
 
 # Running grub2-verify first to prevent double signing
-echo "Running grub2-verify to check if everything is unsigned..."
+echo "Running grub2-verify to check if everything is unsigned..." >&2
 grub2-verify
-if [ $? -lt 2 ]
-then
-    echo "Run grub2-unsign first."
+if (( $? < 2 )); then
+    echo "Run grub2-unsign first." >&2
     exit 1
 fi
 
 
 # Ask for passphrase
-echo -n "Passphrase: "
-stty -echo
-read pp
-stty echo
-echo -e "\n"
+IFS= read -r -s -p 'Passphrase: ' pp
 
+# build a find command line matching relevant filenames
+name_patterns=(
+	grubenv				# fixed names
+	'*.'{cfg,lst,mod,asc,pf2}	# names with interesting extensions
+	{vmlinuz,initrd}'*'		# names with interesting prefixes
+)
+find_args=( '-false' )
+for pattern in "${name_patterns[@]}"; do find_args+=( '-or' '-name' "$pattern" ); done
 
 # Find GRUB2 datas
-for i in `find /boot -name "*.cfg" -or -name "*.lst" -or \
- -name "*.mod" -or -name "vmlinuz*" -or -name "initrd*" -or \
- -name "grubenv" -or -name "*.asc" -or -name "*.pf2"`;
-do
+while IFS= read -r -d '' i; do
     # Signing
-    echo $pp | gpg --batch --detach-sign --passphrase-fd 0 $i
-    if [ $? -eq 0 ]
-    then
-        echo "$i signed."
+    if gpg --batch --detach-sign --passphrase-fd 0 "$i" <<<"$pp"; then
+        echo "$i signed." >&2
     else
-        echo "ERROR!"
+        echo "ERROR!" >&2
 	break
     fi
-done
-
+done < <(find /boot '(' "${find_args[@]}" ')' '-print0' )
 
 # Shredding passphrase
-echo "Shredding passphrase..."
-for (( i=0; $i<10; i++ ))
-do
-    pp=`cat /dev/urandom | tr -dc 'a-zA-Z0-9-!@#$%^&*()_+~' | fold -w ${#pp} | head -n 1`
-done
+if (( ${#pp} )); then
+    echo "Shredding passphrase..." >&2
+    for (( i=0; i<10; i++ )); do
+	pp=$(LC_ALL=C tr -cd '[:print:]' </dev/urandom | head -c ${#pp})
+    done
+fi
 
-echo "Done!"
+echo "Done!" >&2
 exit 0

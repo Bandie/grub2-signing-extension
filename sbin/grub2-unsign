@@ -5,13 +5,10 @@
 # Licence: GNU-GPLv3
 
 # Check if something is wrong
-grub2-verify
-if [ $? -eq 1 ]
-then
-    echo -e "grub2-verify has detected a one or more bad signatures.\nPlease check for malicious software before you're unsigning everything!"
+if ! grub2-verify; then
+    printf '%s\n' "grub2-verify has detected a one or more bad signatures." "Please check for malicious software before you're unsigning everything!" >&2
     exit 1
 fi
-
 
 # Then remove the signatures.
 find /boot -name '*.sig' -exec rm -- '{}' +
