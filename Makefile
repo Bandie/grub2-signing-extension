@@ -9,10 +9,11 @@ install:
 	cp ./sbin/grub2-verify /usr/sbin/
 	cp ./sbin/grub2-sign /usr/sbin/
 	cp ./sbin/grub2-unsign /usr/sbin/
+	cp ./sbin/grub2-update-kernel-signature /usr/sbin/
 	chown root:root /usr/sbin/grub2-{verify,sign,unsign}
-	chmod 700 /usr/sbin/grub2-{verify,sign,unsign}
+	chmod 744 /usr/sbin/grub2-{verify,sign,unsign}
 	@printf "Done.\n"
 
 uninstall:
-	rm /usr/sbin/grub2-{verify,sign,unsign}
+	rm /usr/sbin/grub2-{verify,sign,unsign,update-kernel-signature}
 	@printf "Done.\n"

@@ -1,11 +1,24 @@
 #!/bin/bash
 # grub2-sign
 # Signs everything important in /boot. Depends on grub2-verify.
-# Author: Bandie Kojote
+# Author: Bandie
 # Licence: GNU-GPLv3
 
+function sign(){
+  for f in `find /boot -type f`
+  do
+    if gpg --detach-sign $f
+    then
+      echo $f signed.
+    else
+      return 1
+    fi
+  done
+  return 0
+}
 
-# Running grub2-verify first to prevent double signing
+
+# Running grub2-verify first to prevent bad people and double signing
 echo "Running grub2-verify to check if everything is unsigned..." >&2
 grub2-verify
 if (( $? < 2 )); then
@@ -14,36 +27,10 @@ if (( $? < 2 )); then
 fi
 
 
-# Ask for passphrase
-IFS= read -r -s -p 'Passphrase: ' pp
-
-# build a find command line matching relevant filenames
-name_patterns=(
-	grubenv				# fixed names
-	'*.'{cfg,lst,mod,asc,pf2}	# names with interesting extensions
-	{vmlinuz,initrd}'*'		# names with interesting prefixes
-)
-find_args=( '-false' )
-for pattern in "${name_patterns[@]}"; do find_args+=( '-or' '-name' "$pattern" ); done
-
-# Find GRUB2 datas
-while IFS= read -r -d '' i; do
-    # Signing
-    if gpg --batch --detach-sign --passphrase-fd 0 "$i" <<<"$pp"; then
-        echo "$i signed." >&2
-    else
-        echo "ERROR!" >&2
-	break
-    fi
-done < <(find /boot '(' "${find_args[@]}" ')' '-print0' )
-
-# Shredding passphrase
-if (( ${#pp} )); then
-    echo "Shredding passphrase..." >&2
-    for (( i=0; i<10; i++ )); do
-	pp=$(LC_ALL=C tr -cd '[:print:]' </dev/urandom | head -c ${#pp})
-    done
+if ! sign
+then
+  sign
+else
+  echo -e "\nDone!"
 fi
 
-echo "Done!" >&2
-exit 0

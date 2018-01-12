@@ -1,7 +1,7 @@
 #!/bin/bash
 # grub2-verify
 # Checks the signatures of every file which is has a signature in /boot.
-# Author: Bandie Kojote
+# Author: Bandie
 # Licence: GNU-GPLv3
 
 red=$(tput setaf 1)

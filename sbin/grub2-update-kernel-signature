@@ -1,0 +1,26 @@
+#!/bin/bash
+# grub2-update-kernel-signature
+# Renews the signature in /boot/.
+# Author: Bandie
+# Licence: GNU-GPLv3
+
+function sign(){
+  for f in `find /boot -maxdepth 1 -type f`
+  do
+    if gpg --detach-sign $f
+    then
+      echo $f signed.
+    else
+      return 1
+    fi
+  done
+  return 0
+}
+
+
+rm /boot/*.sig
+
+if ! sign
+then
+  sign
+fi

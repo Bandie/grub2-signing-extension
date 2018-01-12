@@ -75,6 +75,7 @@ If you didn't read the instruction above here is what the scripts does:
 * `grub2-sign` is signing the bootloader files with root's keypair.
 * `grub2-unsign` is removing the signatures of the bootloader files.
 * `grub2-verify` is checking if your signatures are good. If not, you will see which signature is bad.
+* `grub2-update-kernel-signature` is renewing the signatures in /boot/. (without subdirs) regardless if grub2-verify fails.
 
 
 
