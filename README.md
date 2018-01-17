@@ -42,10 +42,10 @@ First, export your public key.
 
 Next step, `mount /boot` and (re)install GRUB2. You need to install the public key into the core and instruct to load the modules `gcry_sha256` `gcry_dsa` and `gcry_rsa` at start. So you need the following arguments to install it this way
 
-`grub2-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
+`grub-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
 
 
-Now download the grub2-signing-extension and run `make install` as root. You will now have `grub2-sign`, `grub2-unsign` and `grub2-verify` as runable scripts.
+Now download the grub2-signing-extension and run `make install` as root. You will now have `grub2-sign`, `grub2-unsign`, `grub2-verify` and `grub2-update-kernel-signature` as runable scripts.
 
 
 To _enable_ GRUB2's check\_signatures feature insert the following content at the end of the file of */etc/grub.d/00_header* 
@@ -55,14 +55,21 @@ To _enable_ GRUB2's check\_signatures feature insert the following content at th
     EOF
 
 
-Run `grub2-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
+Run `grub-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
 
 Now the time is come to sign your GRUB2 bootloader. Just run `grub2-sign`, enter your passphrase and that's it.
 
+**It's also recommended to intall a password in GRUB2! [See ADDENDUM]**
 
-**ATTENTION:** On every change you need to run `grub2-unsign` first before you make your changes. It's also recommended to install a password in GRUB2!
 
 
+
+
+## How to update the signatures on change
+
+On every change at the GRUB2 core files you need to run `grub2-unsign` first before you make your changes. Please notice, if you reinstall GRUB2, you should do it as it is said above. Otherwise the signature check won't work.
+
+If you do some changes or updates for the kernel or initramfs, you may want to use `grub2-update-kernel-signature` instead.
 
 
 
@@ -83,9 +90,10 @@ If you didn't read the instruction above here is what the scripts does:
 ### I forgot to run grub2-unsign before I made changes. What now?
 
 Run `grub2-verify` to see, which signature is bad. Remove the signature and run `grub2-unsign`, after this `grub2-sign`.
+Alternatively, if you just updated your kernel/initramfs, run `grub2-update-kernel-signatures`.
 
 
-### How can I switch off GRUB2's check_signature feature?
+### How can I switch off GRUB2's check\_signature feature?
 
 Open */etc/grub.d/00_header* and remove the part 
 
@@ -95,15 +103,19 @@ Open */etc/grub.d/00_header* and remove the part
 
 Run `grub2-unsign` and `grub2-mkconfig -o /boot/grub/grub.cfg`.
 
+Also you should reinstall grub2, using something like `grub-install /dev/sda`.
+
 
 ### Suddenly I can't boot! This is YOUR FAULT!
 
 No. An important signature is bad. So GRUB2 didn't run this part of code/configuration/kernel/whatever.
+You could do a chroot using an USB dongle with a GNU/Linux distribution on it. If you're chrooted to your system run `grub2-verify`. 
+If you think this happened through an update shortly done by you, you may want to run `gpg-agent --daemon ; grub2-update-kernel-signatures`.
 
 
-### Okay, I really got some bad signatures. What do I do now?
+### Okay, I really got some bad signatures not caused by me. What do I do now?
 
-Check your system thoroughly. Check it about malicious software. Check it about malicious connections. CHECK EVERYTHING.
+Check your system thoroughly. Check it about malicious software. Check it about malicious connections. CHECK EVERYTHING. 
 
 
 
