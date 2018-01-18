@@ -101,7 +101,7 @@ Open */etc/grub.d/00_header* and remove the part
     set check_signatures=enforce
     EOF
 
-Run `grub2-unsign` and `grub2-mkconfig -o /boot/grub/grub.cfg`.
+Run `grub2-unsign` and `grub-mkconfig -o /boot/grub/grub.cfg`.
 
 Also you should reinstall grub2, using something like `grub-install /dev/sda`.
 
@@ -123,7 +123,7 @@ Check your system thoroughly. Check it about malicious software. Check it about 
 
 ## How to install a GRUB2 password
 
-Run `grub2-mkpasswd-pbkdf2` and type a password. Please take care because in the GRUB2 standard installation the keyboard layout is set to en\_US.
+Run `grub-mkpasswd-pbkdf2` and type a password. Please take care because in the GRUB2 standard installation the keyboard layout is set to en\_US.
 Copy the content of *grub.pbkdf2.[...]* to your clipboard. Open the file */etc/grub.d/00_header* and insert this at the end of the file
 
     cat << EOF
@@ -151,7 +151,7 @@ The important changing is the flag *--unrestricted*.
 
 Run `grub2-unsign` to unsign the bootloader. 
 
-Then run `grub2-mkconfig -o /boot/grub/grub.cfg` to write the new config. 
+Then run `grub-mkconfig -o /boot/grub/grub.cfg` to write the new config. 
 
 After this run `grub2-sign` again to sign the new changings.
 
