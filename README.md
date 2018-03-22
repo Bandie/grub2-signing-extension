@@ -98,10 +98,12 @@ You might be interested in the exit codes of `grub2-verify` to use it in your mo
 
 ## Troubleshooting
 
-### I receive an error gpg: signing failed: Permission denied
+### I receive an error 
+#### gpg: signing failed: Permission denied
 
-Make sure that the tty you are in belongs to you (root). To do so:
-`chown root:root $(tty)`
+Make sure that the tty you are in belongs to you (root). 
+
+Do: `chown root:root $(tty)`
 
 
 ### I forgot to run grub2-unsign before I made changes. What now?
