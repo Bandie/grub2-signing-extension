@@ -8,42 +8,90 @@ red=$(tput setaf 1)
 green=$(tput setaf 2)
 normal=$(tput sgr0)
 
-all_files=( )
+all_files1=( )
+all_files2=( )
 error_files=( )
+missing_files=( )
 
 # Signature check part + error counter + file counter + file list
 
 echo "Checking signatures in /boot..." >&2
-while IFS= read -r -d '' i; do
-    if ! gpg --verify-files "$i" >/dev/null 2>&1; then
+while IFS= read -r -d '' i
+do
+    if ! gpg --verify-files "$i" >/dev/null 2>&1
+    then
         error_files+=( "$i" )
     fi
-    all_files+=( "$i" )
-done < <(find /boot -name "*.sig" -print0)
+    all_files1+=( "$i" )
+done < <(find /boot -type f -name "*.sig" -print0)
+
+echo "Checking missing signatures in /boot..." >&2
+while IFS= read -r -d '' i
+do
+    if test ! -f ${i}.sig
+    then
+        missing_files+=( "$i" )
+    fi
+    all_files2+=( "$i" )
+done < <(find /boot -type f -not -name "*.sig" -print0)
 
 # Nothing to verify? Exit 2.
-if (( ${#all_files[@]} == 0 )); then
+if (( ${#all_files1[@]} == 0 ))
+then
     echo "Nothing to verify." >&2
     exit 2
 fi
 
-# Message
+# Message signatures
 printf '%s' 'Found ' >&2
-if (( ${#error_files} == 0 )); then
+if (( ${#error_files} == 0 ))
+then
     printf '%s' "$green" "no" "$normal" >&2
 else
     printf '%s' "$red" "${#error_files[@]}" "$normal" >&2
 fi
-if (( ${#error_files[@]} == 1 )); then
+if (( ${#error_files[@]} == 1 ))
+then
     echo " bad signature." >&2
 else
     echo " bad signatures." >&2
 fi
 
-# File list and exit codes
-if (( ${#error_files[@]} > 0 )); then
+# Message missing
+printf '%s' 'Found ' >&2
+if (( ${#missing_files} == 0 ))
+then
+    printf '%s' "$green" "no" "$normal" >&2
+else
+    printf '%s' "$red" "${#missing_files[@]}" "$normal" >&2
+fi
+if (( ${#missing_files[@]} == 1 ))
+then
+    echo " missing signature." >&2
+else
+    echo " missing signatures." >&2
+fi
+
+
+
+# File list
+if (( ${#error_files[@]} > 0 ))
+then
     printf 'BAD signature: %s\n' "${error_files[@]}"
+fi
+
+if (( ${#missing_files[@]} > 0 ))
+then
+    printf 'MISSING signatures: %s\n' "${missing_files[@]}"
+fi
+
+# Exit codes
+if (( ${#error_files[@]} > 0 ))
+then
     exit 1
+elif (( ${#missing_files[@]} > 0 ))
+then
+    exit 3
 else
     exit 0
 fi

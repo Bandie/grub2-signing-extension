@@ -5,9 +5,22 @@
 # Licence: GNU-GPLv3
 
 # Check if something is wrong
-if ! grub2-verify; then
+grub2-verify
+stat=$?
+if (( $stat == 1 ))
+then
   printf '%s\n' "grub2-verify has detected a one or more bad signatures." "Please check for malicious software before you're unsigning everything!" >&2
   exit 1
+elif (( $stat == 2 ))
+then
+  printf 'Everything is unsigned already.\n'
+  exit 0
+elif (( $stat == 3 ))
+then
+  printf 'Ignoring missing signatures...\n'
+else
+  printf 'Something unknown happened!\n'
+  exit 99
 fi
 
 # Then remove the signatures.
