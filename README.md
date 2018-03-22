@@ -59,7 +59,7 @@ Run `grub-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
 
 Now the time is come to sign your GRUB2 bootloader. Just run `grub2-sign`, enter your passphrase and that's it.
 
-**It's also recommended to intall a password in GRUB2! [See ADDENDUM]**
+**It's also recommended to install a password in GRUB2! [See ADDENDUM]**
 
 
 
