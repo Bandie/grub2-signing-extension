@@ -8,8 +8,7 @@ red=$(tput setaf 1)
 green=$(tput setaf 2)
 normal=$(tput sgr0)
 
-all_files1=( )
-all_files2=( )
+all_files=( )
 error_files=( )
 missing_files=( )
 
@@ -22,7 +21,7 @@ do
     then
         error_files+=( "$i" )
     fi
-    all_files1+=( "$i" )
+    all_files+=( "$i" )
 done < <(find /boot -type f -name "*.sig" -print0)
 
 echo "Checking missing signatures in /boot..." >&2
@@ -32,11 +31,10 @@ do
     then
         missing_files+=( "$i" )
     fi
-    all_files2+=( "$i" )
 done < <(find /boot -type f -not -name "*.sig" -print0)
 
 # Nothing to verify? Exit 2.
-if (( ${#all_files1[@]} == 0 ))
+if (( ${#all_files[@]} == 0 ))
 then
     echo "Nothing to verify." >&2
     exit 2
