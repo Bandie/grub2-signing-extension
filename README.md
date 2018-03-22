@@ -84,6 +84,17 @@ If you didn't read the instruction above here is what the scripts does:
 * `grub2-update-kernel-signature` is renewing the signatures in /boot/. (without subdirs) regardless if grub2-verify fails.
 
 
+## Exit codes
+
+You might be interested in the exit codes of `grub2-verify` to use it in your monitoring tools:
+
+```
+0 - Everything is okay
+1 - Found bad signatures
+2 - No signatures found at all [GRUB2 is completely unsigned]
+3 - Missing signatures [There are correct signatures but some files are unsigned]
+```
+
 
 ## Troubleshooting
 
