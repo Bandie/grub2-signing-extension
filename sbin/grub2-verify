@@ -87,11 +87,11 @@ fi
 if (( ${#error_files[@]} > 0 ))
 then
     exit 1
-elif (( ${#missing_files[@]} > 0 ))
-then
-    exit 3
-else
-    exit 0
 fi
 
-exit 99
+if (( ${#missing_files[@]} > 0 ))
+then
+    exit 3
+fi
+
+exit 0
