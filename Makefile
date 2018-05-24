@@ -1,5 +1,5 @@
 # Makefile for grub2-sign-extension
-# Author: Bandie Kojote (MeikoDis)
+# Author: Bandie
 # Licence: GNU-GPLv3
 
 all: 
