@@ -14,58 +14,53 @@ You need
 
 
 
-## Preparation
+## Installation
+### Arch Linux (AUR)
+- Import [Bandie's GPG key](https://bandie.org/assets/bandie.pub.asc) through running `gpg --recv-keys E2D7876915312785DC086BFCC1E133BC65A822DD`.
+- Use your favourite AUR helper to install [grub2-signing-extension](https://aur.archlinux.org/packages/grub2-signing-extension/).
 
-Before you can use the signing and verification feature you need to generate a keypair as root. Please use a secure passphrase.
+### From github
+- Import [Bandie's GPG key](https://bandie.org/assets/bandie.pub.asc) through running `gpg --recv-keys E2D7876915312785DC086BFCC1E133BC65A822DD`.
+- Download the [grub2-signing-extension](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.tar.gz) and it's [signature](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.tar.gz.asc). 
+- Run `gpg --verify grub2-signing-extension*.tar.gz.asc` to make sure that everything is alright.
+- Unpack the tar archive. `tar xvf grub2-signing-extension*.tar.gz`
+- Change into the grub2-signing-extension directory.
+- Run `make install` as root. 
 
-`# gpg --gen-key`
-
-
-To make gpg able to sign and verify files in a `su` environment we need to activate the gpg-agent for root. 
-
-Edit the file _/root/.gnupg/gpg.conf_ and add the line `use-agent`.
-
-Save the file and create _/root/.gnupg/gpg-agent.conf_ with the following content
-
-    pinentry-program /usr/bin/pinentry-curses
-    no-grab
-    default-cache-ttl 1800
+You will now have `grub2-sign`, `grub2-unsign`, `grub2-verify` and `grub2-update-kernel-signature` as runable scripts.
 
 
+## Enabling GRUB2 check\_signatures feature
 
-## How to install the GRUB2 check\_signatures feature and using the grub2-signing-extension
+Before you can use the signing and verification feature you need to generate a keypair as root.
 
-First, export your public key.
+- Run `gpg --gen-key` as root. Please use a secure passphrase.
+- Activate the `gpg-agent` for root so that you are able to sign and verify files in a `su` environment. To do that:
+  - Edit the file _/root/.gnupg/gpg.conf_ and add the line `use-agent`. Save the file.
+  - Create _/root/.gnupg/gpg-agent.conf_ with the following content
+      ```
+      pinentry-program /usr/bin/pinentry-curses
+      no-grab
+      default-cache-ttl 1800
+      ```
+- Export your public key through running `gpg --export -o ~/pubkey`.
+- `mount /boot` (assuming your /boot partition is in your /etc/fstab)
+- (Re)install GRUB2. The following command will install root's public key into the core and instruct to load the modules `gcry_sha256` `gcry_dsa` and `gcry_rsa` at start so that GRUB2 will be able to do verifications.
+  - `grub-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
+- Enable GRUB2's check\_signatures feature:
+  - Insert the following content at the end of the file of */etc/grub.d/00_header*
+      ```
+      cat << EOF
+      set check_signatures=enforce
+      EOF
+      ```    
+- Run`grub-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
+- Sign your bootloader running `grub2-sign` and enter your GPG passphrase. 
 
-`# gpg --export -o ~/pubkey`
-
-
-Next step, `mount /boot` and (re)install GRUB2. You need to install the public key into the core and instruct to load the modules `gcry_sha256` `gcry_dsa` and `gcry_rsa` at start. So you need the following arguments to install it this way
-
-`grub-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
-
-
-Now download the grub2-signing-extension and run `make install` as root. You will now have `grub2-sign`, `grub2-unsign`, `grub2-verify` and `grub2-update-kernel-signature` as runable scripts.
-
-
-To _enable_ GRUB2's check\_signatures feature insert the following content at the end of the file of */etc/grub.d/00_header* 
-
-    cat << EOF
-    set check_signatures=enforce
-    EOF
-
-
-Run `grub-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
-
-Now the time is come to sign your GRUB2 bootloader. Just run `grub2-sign`, enter your passphrase and that's it.
-
-**It's also recommended to install a password in GRUB2! [See ADDENDUM]**
-
-
+**It is also recommended to install a password in GRUB2! [See ADDENDUM]**
 
 
-
-## How to update the signatures on change
+## How to update the signatures on changes
 
 On every change at the GRUB2 core files you need to run `grub2-unsign` first before you make your changes. Please notice, if you reinstall GRUB2, you should do it as it is said above. Otherwise the signature check won't work.
 
@@ -146,35 +141,33 @@ Check your system thoroughly. Check it about malicious software. Check it about 
 
 ## How to install a GRUB2 password
 
-Run `grub-mkpasswd-pbkdf2` and type a password. Please take care because in the GRUB2 standard installation the keyboard layout is set to en\_US.
-Copy the content of *grub.pbkdf2.[...]* to your clipboard. Open the file */etc/grub.d/00_header* and insert this at the end of the file
-
+- Generate a GRUB2 password string through running `grub-mkpasswd-pbkdf2`. Please take care because in the GRUB2 standard installation the keyboard layout is set to en\_US.
+- Copy the generated *grub.pbkdf2.[...]* string to your clipboard.
+- Open the file */etc/grub.d/00_header* and insert this at the end of the file
+    ```
     cat << EOF
     set superusers="yourUsername"
     export superusers
-    password_pbkdf2 yourUsername grub.pbkdf2.[...this string from the clipboard...]
+    password_pbkdf2 yourUsername [...this grub.pbkdf2.* string from the clipboard...]
     EOF
-
-To boot GNU/Linux automatically and without authentication open */etc/grub.d/10_linux* and change the following lines like this
-
-     echo "menuentry '$(echo "$title" | grub_quote)' ${CLASS} \$menuentry_id_option 'gnulinux-$version-$type-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
+    ```
+- To boot GNU/Linux automatically and without authentication open */etc/grub.d/10_linux* and change the following lines from
+  ```
+      echo "menuentry '$(echo "$title" | grub_quote)' ${CLASS} \$menuentry_id_option 'gnulinux-$version-$type-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
     else
-     echo "menuentry '$(echo "$os" | grub_quote)' ${CLASS} \$menuentry_id_option 'gnulinux-simple-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
+      echo "menuentry '$(echo "$os" | grub_quote)' ${CLASS} \$menuentry_id_option 'gnulinux-simple-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
     fi
+  ```
+  to
 
-to
-
-     echo "menuentry '$(echo "$title" | grub_quote)' --unrestricted ${CLASS} \$menuentry_id_option 'gnulinux-$version-$type-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
+  ```
+      echo "menuentry '$(echo "$title" | grub_quote)' --unrestricted ${CLASS} \$menuentry_id_option 'gnulinux-$version-$type-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
     else
-     echo "menuentry '$(echo "$os" | grub_quote)' --unrestricted ${CLASS} \$menuentry_id_option 'gnulinux-simple-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
+      echo "menuentry '$(echo "$os" | grub_quote)' --unrestricted ${CLASS} \$menuentry_id_option 'gnulinux-simple-$boot_device_id' {" | sed "s/^/$submenu_indentation/"
     fi
-
-The important changing is the flag *--unrestricted*.
-
-
-Run `grub2-unsign` to unsign the bootloader. 
-
-Then run `grub-mkconfig -o /boot/grub/grub.cfg` to write the new config. 
-
-After this run `grub2-sign` again to sign the new changings.
-
+  ```
+  The important changing is the flag *--unrestricted*.
+  
+- Run `grub2-unsign` to unsign the bootloader.
+- Run `grub-mkconfig -o /boot/grub/grub.cfg` to write the new config.
+- Run `grub2-sign` to sign the new changings.
