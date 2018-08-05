@@ -21,7 +21,7 @@ then
 elif (( $stat == 0 ))
 then
   # Then remove the signatures.
-  find /boot -name '*.sig' -exec rm -- '{}' +
+  find /boot -name '*.sig' -exec rm {} +
 
   echo "GRUB2 unsigned. WARNING: If you want to deactivate GRUB2's signature feature, change the check_signatures variable in the headers file!"
   exit 0
