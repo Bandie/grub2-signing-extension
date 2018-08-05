@@ -21,7 +21,7 @@ You need
 
 ### From github
 - Import [Bandie's GPG key](https://bandie.org/assets/bandie.pub.asc) through running `gpg --recv-keys E2D7876915312785DC086BFCC1E133BC65A822DD`.
-- Download the [grub2-signing-extension](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.tar.gz) and it's [signature](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.tar.gz.asc). 
+- Download the [grub2-signing-extension](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.1.tar.gz) and it's [signature](https://github.com/Bandie/grub2-signing-extension/releases/download/0.1/grub2-signing-extension-0.1.1.tar.gz.asc). 
 - Run `gpg --verify grub2-signing-extension*.tar.gz.asc` to make sure that everything is alright.
 - Unpack the tar archive. `tar xvf grub2-signing-extension*.tar.gz`
 - Change into the grub2-signing-extension directory.
