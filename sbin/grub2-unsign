@@ -7,28 +7,26 @@
 # Check if something is wrong
 grub2-verify
 stat=$?
-if (( $stat == 1 ))
-then
+case "$stat" in
+1)
   printf '%s\n' "grub2-verify has detected a one or more bad signatures." "Please check for malicious software before you're unsigning everything!" >&2
   exit 1
-elif (( $stat == 2 ))
-then
+	;;
+2)
   printf 'Everything is unsigned already.\n'
   exit 0
-elif (( $stat == 3 ))
-then
+	;;
+3)
   printf 'Ignoring missing signatures...\n'
-elif (( $stat == 0 ))
-then
+	;&
+0|3)	
   # Then remove the signatures.
   find /boot -name '*.sig' -exec rm {} +
 
   echo "GRUB2 unsigned. WARNING: If you want to deactivate GRUB2's signature feature, change the check_signatures variable in the headers file!"
   exit 0
-
-else
+	;;
+*)
   printf 'Something unknown happened!\n'
   exit 99
-fi
-
-
+esac
