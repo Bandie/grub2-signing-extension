@@ -6,12 +6,14 @@ all:
 	@printf "Nothing to make. Run make install.\n"
 
 install:
-	install -D -m744 sbin/grub2-verify /usr/sbin/grub2-verify
-	install -D -m744 sbin/grub2-sign /usr/sbin/grub2-sign
-	install -D -m744 sbin/grub2-unsign /usr/sbin/grub2-unsign
-	install -D -m744 sbin/grub2-update-kernel-signature /usr/sbin/grub2-update-kernel-signature
+	@printf "Check for old scripts and remove them...\n"
+	rm -f /usr/sbin/grub2-{verify,sign,unsign,update-kernel-signature}
+	install -D -m744 sbin/grub-verify /usr/sbin/grub-verify
+	install -D -m744 sbin/grub-sign /usr/sbin/grub-sign
+	install -D -m744 sbin/grub-unsign /usr/sbin/grub-unsign
+	install -D -m744 sbin/grub-update-kernel-signature /usr/sbin/grub-update-kernel-signature
 	@printf "Done.\n"
 
 uninstall:
-	rm /usr/sbin/grub2-{verify,sign,unsign,update-kernel-signature}
+	rm -f /usr/sbin/grub-{verify,sign,unsign,update-kernel-signature}
 	@printf "Done.\n"
