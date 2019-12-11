@@ -14,11 +14,18 @@ function sign(){
       return 1
     fi
   done
+  if gpg --detach-sign "/boot/grub/grub.cfg"
+  then
+    echo /boot/grub/grub.cfg signed.
+  else
+    return 1
+  fi
   return 0
 }
 
 
 rm /boot/*.sig
+rm /boot/grub/grub.cfg.sig
 
 if ! sign
 then

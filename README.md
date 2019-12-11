@@ -27,7 +27,7 @@ You need
 - Change into the grub2-signing-extension directory.
 - Run `make install` as root. 
 
-You will now have `grub2-sign`, `grub2-unsign`, `grub2-verify` and `grub2-update-kernel-signature` as runable scripts.
+You will now have `grub-sign`, `grub-unsign`, `grub-verify` and `grub-update-kernel-signature` as runable scripts.
 
 
 ## Enabling GRUB2 check\_signatures feature
@@ -55,16 +55,16 @@ Before you can use the signing and verification feature you need to generate a k
       EOF
       ```    
 - Run`grub-mkconfig -o /boot/grub/grub.cfg` to make the new configuration valid.
-- Sign your bootloader running `grub2-sign` and enter your GPG passphrase. 
+- Sign your bootloader running `grub-sign` and enter your GPG passphrase. 
 
 **It is also recommended to install a password in GRUB2! [See ADDENDUM]**
 
 
 ## How to update the signatures on changes
 
-On every change at the GRUB2 core files you need to run `grub2-unsign` first before you make your changes. Please notice, if you reinstall GRUB2, you should do it as it is said above. Otherwise the signature check won't work.
+On every change at the GRUB2 core files you need to run `grub-unsign` first before you make your changes. Please notice, if you reinstall GRUB2, you should do it as it is said above. Otherwise the signature check won't work.
 
-If you do some changes or updates for the kernel or initramfs, you may want to use `grub2-update-kernel-signature` instead.
+If you do some changes or updates for the kernel or initramfs, you may want to use `grub-update-kernel-signature` instead.
 
 
 
@@ -73,15 +73,15 @@ If you do some changes or updates for the kernel or initramfs, you may want to u
 
 If you didn't read the instruction above here is what the scripts does:
 
-* `grub2-sign` is signing the bootloader files with root's keypair.
-* `grub2-unsign` is removing the signatures of the bootloader files.
-* `grub2-verify` is checking if your signatures are good. If not, you will see which signature is bad.
-* `grub2-update-kernel-signature` is renewing the signatures in /boot/. (without subdirs) regardless if grub2-verify fails.
+* `grub-sign` is signing the bootloader files with root's keypair.
+* `grub-unsign` is removing the signatures of the bootloader files.
+* `grub-verify` is checking if your signatures are good. If not, you will see which signature is bad.
+* `grub-update-kernel-signature` is renewing the signatures in /boot/ (without subdirs) and grub.cfg, regardless if grub-verify fails.
 
 
 ## Exit codes
 
-You might be interested in the exit codes of `grub2-verify` to use it in your monitoring tools:
+You might be interested in the exit codes of `grub-verify` to use it in your monitoring tools:
 
 ```
 0 - Everything is okay
@@ -107,8 +107,8 @@ chown root:root $(tty)
 
 ### I forgot to run grub2-unsign before I made changes. What now?
 
-Run `grub2-verify` to see, which signature is bad. Remove the signature and run `grub2-unsign`, after this `grub2-sign`.
-Alternatively, if you just updated your kernel/initramfs, run `grub2-update-kernel-signatures`.
+Run `grub-verify` to see, which signature is bad. Remove the signature and run `grub-unsign`, after this `grub-sign`.
+Alternatively, if you just updated your kernel/initramfs/grub.cfg, run `grub-update-kernel-signatures`.
 
 
 ### How can I switch off GRUB2's check\_signature feature?
@@ -119,7 +119,7 @@ Open */etc/grub.d/00_header* and remove the part
     set check_signatures=enforce
     EOF
 
-Run `grub2-unsign` and `grub-mkconfig -o /boot/grub/grub.cfg`.
+Run `grub-unsign` and `grub-mkconfig -o /boot/grub/grub.cfg`.
 
 Also you should reinstall grub2, using something like `grub-install /dev/sda`.
 
@@ -127,8 +127,8 @@ Also you should reinstall grub2, using something like `grub-install /dev/sda`.
 ### Suddenly I can't boot! This is YOUR FAULT!
 
 No. An important signature is bad. So GRUB2 didn't run this part of code/configuration/kernel/whatever.
-You could do a chroot using an USB dongle with a GNU/Linux distribution on it. If you're chrooted to your system run `grub2-verify`. 
-If you think this happened through an update shortly done by you, you may want to run `gpg-agent --daemon ; grub2-update-kernel-signatures`.
+You could do a chroot using an USB dongle with a GNU/Linux distribution on it. If you're chrooted to your system run `grub-verify`. 
+If you think this happened through an update shortly done by you, you may want to run `gpg-agent --daemon ; grub-update-kernel-signatures`.
 
 
 ### Okay, I really got some bad signatures not caused by me. What do I do now?
@@ -168,6 +168,6 @@ Check your system thoroughly. Check it about malicious software. Check it about 
   ```
   The important changing is the flag *--unrestricted*.
   
-- Run `grub2-unsign` to unsign the bootloader.
+- Run `grub-unsign` to unsign the bootloader.
 - Run `grub-mkconfig -o /boot/grub/grub.cfg` to write the new config.
-- Run `grub2-sign` to sign the new changings.
+- Run `grub-sign` to sign the new changings.
