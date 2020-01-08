@@ -20,7 +20,7 @@ function sign(){
 
 # Running grub2-verify first to prevent bad people and double signing
 echo "Running grub2-verify to check if everything is unsigned..." >&2
-grub2-verify
+grub-verify
 if (( $? < 2 )); then
     echo "Run grub2-unsign first." >&2
     exit 1
