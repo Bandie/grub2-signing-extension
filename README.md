@@ -46,7 +46,7 @@ Before you can use the signing and verification feature you need to generate a k
 - Export your public key through running `gpg --export -o ~/pubkey`.
 - `mount /boot` (assuming your /boot partition is in your /etc/fstab)
 - (Re)install GRUB2. The following command will install root's public key into the core and instruct to load the modules `gcry_sha256`, `gcry_sha512` `gcry_dsa` and `gcry_rsa` at start so that GRUB2 will be able to do verifications. GRUB2 will take the right crypto for you then, depending on your system's configuration.
-  - `grub-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_dsa gcry_rsa"`
+  - `grub-install /dev/sda -k /root/pubkey --modules="gcry_sha256 gcry_sha512 gcry_dsa gcry_rsa"`
 - Enable GRUB2's check\_signatures feature:
   - Insert the following content at the end of the file of */etc/grub.d/00_header*
       ```
