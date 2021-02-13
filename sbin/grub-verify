@@ -22,7 +22,7 @@ do
         error_files+=( "$i" )
     fi
     all_files+=( "$i" )
-done < <(find /boot -type f -name "*.sig" -print0)
+done < <(find /boot -iname "efi" -prune -o -type f -name "*.sig" -print0)
 
 echo "Checking missing signatures in /boot..." >&2
 while IFS= read -r -d '' i
@@ -31,7 +31,7 @@ do
     then
         missing_files+=( "$i" )
     fi
-done < <(find /boot -type f -not -name "*.sig" -print0)
+done < <(find /boot -iname "efi" -prune -o -type f -not -name "*.sig" -print0)
 
 # Nothing to verify? Exit 2.
 if (( ${#all_files[@]} == 0 ))

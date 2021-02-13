@@ -21,7 +21,7 @@ case "$stat" in
 	;&
 0|3)	
   # Then remove the signatures.
-  find /boot -name '*.sig' -exec rm {} +
+  find /boot -iname "efi" -prune -o -name '*.sig' -exec rm {} +
 
   echo "GRUB2 unsigned. WARNING: If you want to deactivate GRUB2's signature feature, change the check_signatures variable in the headers file!"
   exit 0
