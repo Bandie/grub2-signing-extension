@@ -24,8 +24,8 @@ function sign(){
 }
 
 
-rm /boot/*.sig
-rm /boot/grub/grub.cfg.sig
+shred --remove=unlink /boot/*.sig
+shred --remove=unlink /boot/grub/grub.cfg.sig
 
 if ! sign
 then
